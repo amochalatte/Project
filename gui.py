@@ -2,19 +2,26 @@ import tkinter as tk
 from tkinter import messagebox
 import csv
 
-#voting function
-def vote(candidate, voter_id):
-    
-#validate the voter
+# Voting function
+def vote(candidate: str, voter_id: str) -> None:
+    """
+    Record a vote for the specified candidate if the voter identifier is valid and not a duplicate.
+
+    Args:
+        candidate (str): The name of the candidate to vote for.
+        voter_id (str): The unique identifier of the voter.
+    """
+
+    # Validate the voter
     if not validate_identifier(voter_id):
         return
     
-#check for duplicate voter
+    # Check for duplicate voter
     if check_duplicate(voter_id):
         messagebox.showerror("Duplicate Identifier", "This identifier has already been used.")
         return
     
-#record the vote
+    # Record the vote
     with open('votes.csv', 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow([voter_id, candidate])
@@ -23,10 +30,19 @@ def vote(candidate, voter_id):
 
     error_label.config(text="")
 
-# voter id function 
-def validate_identifier(voter_id):
+# Voter ID function 
+def validate_identifier(voter_id: str) -> bool:
+    """
+    Validate that the voter identifier is a positive numeric value.
 
-#make sure the identifier is a positive numeric value
+    Args:
+        voter_id (str): The unique identifier of the voter.
+
+    Returns:
+        bool: True if the identifier is valid, False otherwise.
+    """
+
+    # Make sure the identifier is a positive numeric value
     if not voter_id.isdigit():
         if any(char in voter_id for char in ['.', ',']):
             error_label.config(text="Floating points are not allowed.", fg="red")
@@ -41,8 +57,17 @@ def validate_identifier(voter_id):
     error_label.config(text="")
     return True
 
-#function for duplicate ids
-def check_duplicate(voter_id):
+# Function for duplicate IDs
+def check_duplicate(voter_id: str) -> bool:
+    """
+    Check if the voter identifier has already been used to vote.
+
+    Args:
+        voter_id (str): The unique identifier of the voter.
+
+    Returns:
+        bool: True if the identifier is a duplicate, False otherwise.
+    """
     try:
         with open('votes.csv', 'r') as file:
             reader = csv.reader(file)
@@ -53,8 +78,11 @@ def check_duplicate(voter_id):
         return False
     return False
 
-#voting button function
-def on_vote():
+# Voting button function
+def on_vote() -> None:
+    """
+    Handle the vote button click event by validating input and recording the vote.
+    """
     voter_id = entry_id.get().strip()
     if var.get() == 'Eminem':
         vote('Eminem', voter_id)
@@ -63,11 +91,14 @@ def on_vote():
     elif var.get() == 'Morgan Wallen':
         vote('Morgan Wallen', voter_id)
     else:
-        #error if no one is chose
+        # Error if no one is chosen
         error_label.config(text="Select a candidate", fg="red")
 
-#gui function
-def create_gui():
+# GUI function
+def create_gui() -> None:
+    """
+    Create the graphical user interface for the voting application.
+    """
     global entry_id, var, error_label
 
     root = tk.Tk()
@@ -85,13 +116,13 @@ def create_gui():
     frame = tk.Frame(root)
     frame.pack(pady=10)
 
-#radio buttons for candidates
+    # Radio buttons for candidates
     var = tk.StringVar(value="None")
     tk.Radiobutton(frame, text="Eminem", variable=var, value="Eminem").pack(anchor=tk.CENTER)
     tk.Radiobutton(frame, text="Taylor Swift", variable=var, value="Taylor Swift").pack(anchor=tk.CENTER)
     tk.Radiobutton(frame, text="Morgan Wallen", variable=var, value="Morgan Wallen").pack(anchor=tk.CENTER)
 
-#submit button
+    # Submit button
     tk.Button(root, text="Vote", command=on_vote).pack(pady=20)
 
     error_label = tk.Label(root, text="", fg="red")
